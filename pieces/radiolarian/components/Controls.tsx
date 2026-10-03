@@ -1,6 +1,6 @@
 'use client';
 import { button, folder, Leva, useControls } from 'leva';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { exportJSON, exportPNG, importJSON } from '../lib/export';
 import { GRID_OPTIONS, type GeometryParams, type RenderParams } from '../lib/params';
 import { PRESETS, presetParams } from '../lib/presets';
@@ -92,5 +92,18 @@ export default function Controls({ initial, onChange, onExportGLB }: Props) {
     onChange(geo as GeometryParams, ren as RenderParams);
   }, [geo, ren, onChange]);
 
-  return <Leva titleBar={{ title: 'radiolarian' }} theme={{ sizes: { rootWidth: '320px', controlWidth: '150px' } }} />;
+  // On narrow screens (phones, or the frame on frond-studio.com) the open panel
+  // covers the specimen, so start it collapsed there.
+  const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => {
+    setCollapsed(window.matchMedia('(max-width: 700px)').matches);
+  }, []);
+
+  return (
+    <Leva
+      collapsed={{ collapsed, onChange: setCollapsed }}
+      titleBar={{ title: 'radiolarian' }}
+      theme={{ sizes: { rootWidth: '320px', controlWidth: '150px' } }}
+    />
+  );
 }
